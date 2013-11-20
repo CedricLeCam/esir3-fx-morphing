@@ -116,11 +116,24 @@ for yy = 1:sy
                 xright = xright+1;
             end
             
-            left = double(newimg(xleft,yy,:));
-            right = double(newimg(xright,yy,:));
             
-            val = uint8(((xright-xx)/(xright-xleft))*left + ((x-xleft)/(xright-xleft))*right);
+            left = double(newimg(yy,xleft,:));
+            right = double(newimg(yy,xright,:));
             
+            prod = left.*right;
+            
+            if prod ~= [0 0 0]
+                
+                val = uint8(((xright-xx)/(xright-xleft))*left + ((x-xleft)/(xright-xleft))*right);
+                
+            elseif left == [0 0 0]
+                val = uint8(right);
+            else
+                val = uint8(left);
+            end
+            
+%             newimg(20,50,:) = [0 255 0];
+
             newimg(yy,xx,:) = val;
             changed(yy,xx) = 1;
         end
