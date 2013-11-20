@@ -19,31 +19,79 @@ img = imread(strcat(pathname,filename));
 image(img); axis image ; hold on ;
 [sy sx sc] = size(img);     %sc = 3, nb de canaux de couleurs
 
+% figure;
+% % select goal image
+% [filename,pathname]=uigetfile('*.jpg', 'select input image');
+% imgGoal = imread(strcat(pathname,filename));
+% image(imgGoal); axis image ; hold on ;
+
 
 % warping : point based
 
-% define displacement vectors
+% % define displacement vectors
+% cont = 1 ;
+% cl = 0 ;
+% pt = 0 ;
+% while cont
+%     [x,y,b] = ginput(1);
+%     % enter the point
+%     if cl==0
+%         % first point
+%         vect(pt+1,:) = [x y 0 0];
+%     else
+%         % end point
+%         vect(pt+1,:) = vect(pt+1,:)+ [0 0 x y];
+%         plot([vect(pt+1,1) vect(pt+1,3)],[vect(pt+1,2) vect(pt+1,4)],'-');
+%         plot(vect(pt+1,1), vect(pt+1,2),'o');
+%         pt = pt+1;
+%     end
+%     cl = mod(cl+1,2);
+%     if b==3 
+%         cont = 0 ;
+%     end
+% end
+
+vect = [];
+
+% define displacement vectors origins
 cont = 1 ;
-cl = 0 ;
 pt = 0 ;
 while cont
     [x,y,b] = ginput(1);
     % enter the point
-    if cl==0
-        % first point
-        vect(pt+1,:) = [x y 0 0];
-    else
-        % end point
-        vect(pt+1,:) = vect(pt+1,:)+ [0 0 x y];
-        plot([vect(pt+1,1) vect(pt+1,3)],[vect(pt+1,2) vect(pt+1,4)],'-');
-        plot(vect(pt+1,1), vect(pt+1,2),'o');
-        pt = pt+1;
-    end
-    cl = mod(cl+1,2);
+    vect(pt+1,:) = [x y 0 0];
+    plot(vect(pt+1,1), vect(pt+1,2),'o');
+    pt = pt+1;
+    
+    
     if b==3 
         cont = 0 ;
     end
 end
+
+% open goal image
+figure;
+% select goal image
+[filename,pathname]=uigetfile('*.jpg', 'select input image');
+imgGoal = imread(strcat(pathname,filename));
+image(imgGoal); axis image ; hold on ;
+
+% define displacement vectors ends
+cont = 1 ;
+pt = 0 ;
+while cont
+    [x,y,b] = ginput(1);
+    % enter the point
+    vect(pt+1,:) = [0 0 x y];
+    plot(vect(pt+1,1), vect(pt+1,2),'o');
+    pt = pt+1;
+    
+    
+    if b==3 
+        cont = 0 ;
+    end
+end
+
 % computing the warp
 % new image 
 newimg = uint8(zeros(sy,sx,sc));
@@ -122,15 +170,15 @@ for yy = 1:sy
             
             prod = left.*right;
             
-            if prod ~= [0 0 0]
+         %   if prod ~= [0 0 0]
                 
                 val = uint8(((xright-xx)/(xright-xleft))*left + ((x-xleft)/(xright-xleft))*right);
                 
-            elseif left == [0 0 0]
+            %elseif left == [0 0 0]
                 val = uint8(right);
-            else
+           % else
                 val = uint8(left);
-            end
+           % end
             
 %             newimg(20,50,:) = [0 255 0];
 
